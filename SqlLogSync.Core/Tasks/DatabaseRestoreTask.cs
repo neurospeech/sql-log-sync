@@ -110,11 +110,12 @@ namespace SqlLogSync.Tasks
             {
                 foreach (string script in scripts)
                 {
-                    string sql = string.Format(script, Database, tfile.FullName);
+                    string sql = string.Format(script, Database, tfile.FullName, tfile.FullName + ".r");
 
                     ConnectionString.Execute(sql);
                 }
                 tfile.Delete();
+                System.IO.File.Delete(tfile.FullName + ".r");
             }
             catch (Exception ex) {
                 Utils.Log(ex.ToString());
@@ -123,8 +124,8 @@ namespace SqlLogSync.Tasks
             }
         }
 
-        string restoreLog = "RESTORE LOG [{0}] FROM  DISK = N'{1}' WITH FILE=1, STANDBY,  NOUNLOAD, REPLACE, STATS = 10";
-        string restoreFull = "RESTORE DATABASE [{0}] FROM  DISK = N'{1}' WITH FILE=1, STANDBY,  NOUNLOAD, REPLACE, STATS = 10";
+        string restoreLog = "RESTORE LOG [{0}] FROM  DISK = N'{1}' WITH FILE=1, STANDBY=N'{2}',  NOUNLOAD, REPLACE, STATS = 10";
+        string restoreFull = "RESTORE DATABASE [{0}] FROM  DISK = N'{1}' WITH FILE=1, STANDBY=N'{2}',  NOUNLOAD, REPLACE, STATS = 10";
 
 
 
