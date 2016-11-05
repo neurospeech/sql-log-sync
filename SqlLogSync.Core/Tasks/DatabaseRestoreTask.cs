@@ -119,7 +119,7 @@ namespace SqlLogSync.Tasks
             }
             catch (Exception ex) {
                 Utils.Log(ex.ToString());
-                zipFile.Delete();
+                //zipFile.Delete();
                 throw new InvalidOperationException("Restore Failed for " + Database,ex);
             }
         }
