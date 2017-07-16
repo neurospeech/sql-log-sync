@@ -31,6 +31,8 @@ namespace SqlLogSync.Tasks
                 Storage.DeleteFile(Database + "/" + FileDateKey(i) + "/logs/");
             }
 
+            
+
             TakeBackup(backup, today);
 
             return false;

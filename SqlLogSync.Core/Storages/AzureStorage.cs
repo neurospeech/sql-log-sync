@@ -57,7 +57,9 @@ namespace SqlLogSync.Storages
         {
             cloudPath = cloudPath.ToLower();
             var client = Client;
-            var blob = client.GetBlobReferenceFromServer(new Uri(client.BaseUri, Container + "/" + cloudPath));
+            var container = client.GetContainerReference(Container);
+            var blob = container.GetBlockBlobReference(cloudPath);
+            ///var blob = client.GetBlobReferenceFromServer(new Uri(client.BaseUri, Container + "/" + cloudPath));
             //blob.UploadFile(localFile.FullName, new BlobRequestOptions { Timeout = TimeSpan.FromMinutes(10) });
             blob.UploadFromFile(localFile.FullName);
         }
@@ -94,8 +96,11 @@ namespace SqlLogSync.Storages
         {
             cloudPath = cloudPath.ToLower();
             var client = Client;
+
+            var cc = client.GetContainerReference(Container);
+            var b = cc.GetBlockBlobReference(cloudPath);
             
-            var b = client.GetBlobReferenceFromServer(new Uri(client.BaseUri, Container + "/" + cloudPath));
+            //var b = client.GetBlobReferenceFromServer(new Uri(client.BaseUri, Container + "/" + cloudPath));
             return b.Exists();
         }
     }
