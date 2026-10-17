@@ -25,6 +25,7 @@ public class Program
         Console.SetError(threadSafeWriter);
 
         DotNetEnv.Env.Load();
+        DotNetEnv.Env.TraversePath().Load();
         CreateHostBuilder(args).Build().Run();
     }
 

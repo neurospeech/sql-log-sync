@@ -46,12 +46,16 @@ namespace SqlLogSync.Tasks
 
             if (mode == DatabaseTaskMode.Backup)
             {
-                DBTask = new DatabaseBackupTask();
+                DBTask = services.GetRequiredService<DatabaseBackupTask>();
             }
             else {
-                DBTask = new DatabaseRestoreTask();
+                DBTask = services.GetRequiredService<DatabaseRestoreTask>();
             }
             var cnstr = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_CONNECTION_STRING");
+            if (string.IsNullOrWhiteSpace(cnstr))
+            {
+                throw new Exception("Connection string is empty");
+            }
             DBTask.ConnectionString = new SqlConnectionStringBuilder(cnstr);
             DBTask.IgnoreDatabases = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_IGNORE_DATABASES") ?? "master,tempdb,model,msdb,ReportServer,ReportServerTempDB";
             DBTask.BackupFolder = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_FOLDER") ?? "d:\\BackupTests";

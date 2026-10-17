@@ -78,21 +78,12 @@ namespace SqlLogSync
 
         public static void Execute(this SqlConnectionStringBuilder cb, string cmdText, Action<SqlDataReader> cmdAction)
         {
-            SqlConnection conn = null;
-            try
-            {
-                conn = new SqlConnection(cb.ToString());
-                conn.Open();
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = cmdText;
-                SqlDataReader dr = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
-                cmdAction(dr);
-                conn.Close();
-            }
-            finally
-            {
-                conn.Close();
-            }
+            using var conn = new SqlConnection(cb.ToString());
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandText = cmdText;
+            SqlDataReader dr = cmd.ExecuteReader(System.Data.CommandBehavior.CloseConnection);
+            cmdAction(dr);
         }
 
         public static async Task ExecuteAsync(this SqlConnectionStringBuilder cb, string cmdText)
@@ -108,21 +99,12 @@ namespace SqlLogSync
 
         public static void Execute(this SqlConnectionStringBuilder cb, string cmdText)
         {
-            SqlConnection conn = null;
-            try
-            {
-                conn = new SqlConnection(cb.ToString());
-                conn.Open();
-                SqlCommand cmd = conn.CreateCommand();
-                cmd.CommandTimeout = int.MaxValue;
-                cmd.CommandText = cmdText;
-                cmd.ExecuteNonQuery();
-                conn.Close();
-            }
-            finally
-            {
-                conn.Close();
-            }
+            using var conn = new SqlConnection(cb.ToString());
+            conn.Open();
+            SqlCommand cmd = conn.CreateCommand();
+            cmd.CommandTimeout = int.MaxValue;
+            cmd.CommandText = cmdText;
+            cmd.ExecuteNonQuery();
         }
 
     }

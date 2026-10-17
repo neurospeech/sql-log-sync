@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using SqlLogSync.Tasks;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,8 @@ internal class Worker : BackgroundService
         {
             try
             {
-                var task = DatabaseTask.Create(services);
+                using var scope = services.CreateScope();
+                var task = DatabaseTask.Create(scope.ServiceProvider);
                 await task.RunAsync();
             } catch (Exception ex)
             {
