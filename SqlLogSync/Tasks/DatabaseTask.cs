@@ -58,7 +58,7 @@ namespace SqlLogSync.Tasks
             }
             DBTask.ConnectionString = new SqlConnectionStringBuilder(cnstr);
             DBTask.IgnoreDatabases = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_IGNORE_DATABASES") ?? "master,tempdb,model,msdb,ReportServer,ReportServerTempDB";
-            DBTask.BackupFolder = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_FOLDER") ?? "d:\\BackupTests";
+            DBTask.BackupFolder = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_FOLDER") ?? "c:\\SqlTemp";
             DBTask.ZipPassword = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_PASSWORD");
 
             string storage = Environment.GetEnvironmentVariable("SQL_LOG_SYNC_STORAGE") ?? "s3";
