@@ -27,9 +27,8 @@ namespace SqlLogSync.Tasks
 
             DatabaseTaskMode mode = DatabaseTaskMode.Backup;
 
-            var settings = services.GetRequiredService<IConfiguration>();
 
-            string mt = settings["DB.Mode"];
+            string mt = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_MODE");
             if (string.IsNullOrWhiteSpace(mt))
             {
                 mt = "backup";
@@ -52,31 +51,22 @@ namespace SqlLogSync.Tasks
             else {
                 DBTask = new DatabaseRestoreTask();
             }
+            var cnstr = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_CONNECTION_STRING");
+            DBTask.ConnectionString = new SqlConnectionStringBuilder(cnstr);
+            DBTask.IgnoreDatabases = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_IGNORE_DATABASES") ?? "master,tempdb,model,msdb,ReportServer,ReportServerTempDB";
+            DBTask.BackupFolder = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_FOLDER") ?? "d:\\BackupTests";
+            DBTask.ZipPassword = System.Environment.GetEnvironmentVariable("SQL_LOG_SYNC_BACKUP_PASSWORD");
 
-            DBTask.ConnectionString = new SqlConnectionStringBuilder(settings["DB.ConnectionString"]);
-            DBTask.IgnoreDatabases = settings["DB.IgnoreDatabases"];
-            DBTask.BackupFolder = settings["DB.BackupFolder"];
-            DBTask.ZipPassword = settings["DB.Zip.Password"];
-            int val = int.Parse(settings["DB.Interval"]);
-
-            string storage = settings["DB.Storage"];
+            string storage = Environment.GetEnvironmentVariable("SQL_LOG_SYNC_STORAGE") ?? "s3";
             Storage sg = null;
 
-            if (string.IsNullOrWhiteSpace(storage))
-            {
-                storage = "azure";
-            }
-            else
-            {
-                storage = storage.ToLower();
-            }
 
-            if (storage == "azure")
+            if (storage == "s3")
             {
                 sg = new S3Storage(
-                    settings["DB.Storage.BucketName"],
-                    settings["DB.Storage.AccessKeyId"],
-                    settings["DB.Storage.SecretAccessKey"]
+                    Environment.GetEnvironmentVariable("AWS_S3_BUCKET"),
+                    Environment.GetEnvironmentVariable("AWS_ACCESS_KEY_ID"),
+                    Environment.GetEnvironmentVariable("AWS_SECRET_ACCESS_KEY")
                 );
 
                 //sg.Container = settings["DB.Storage.Container"];
@@ -85,6 +75,9 @@ namespace SqlLogSync.Tasks
                 //sg.Secrete = settings["DB.Storage.Secrete"];
 
                 DBTask.Storage = sg;
+            } else
+            {
+                throw new InvalidOperationException($"Invalid storage `{storage}` specified");
             }
 
             return DBTask;

@@ -1,2 +1,2 @@
 sc stop SqlLogSync
-C:\Windows\Microsoft.NET\Framework64\v4.0.30319\InstallUtil.exe /u SqlLogSync.exe
+sc delete SqlLogSync
