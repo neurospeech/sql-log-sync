@@ -1,47 +1,20 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration.Install;
-using System.Linq;
-using System.Reflection;
-using System.ServiceProcess;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Extensions.Hosting;
 
-namespace SqlLogSync
+namespace SqlLogSync;
+
+public class Program
 {
-    static class Program
+    public static void Main(string[] args)
     {
-        /// <summary>
-        /// The main entry point for the application.
-        /// </summary>
-        static void Main(string[] args)
-        {
+        CreateHostBuilder(args).Build().Run();
+    }
 
+    public static IHostBuilder CreateHostBuilder(string[] args)
+    {
+        return Host.CreateDefaultBuilder(args)
+            .UseWindowsService().ConfigureServices((hostContext, services) => {
+                
+            });
 
-            /*if (args?.Length > 0) {
-
-                string p = string.Concat(args).ToLower().Trim();
-                if (p.StartsWith("--install")) {
-                    ManagedInstallerClass.InstallHelper(new string[] {
-                         typeof(Program).Assembly.Location
-                    });
-                    return;
-                }
-                if (p.StartsWith("--uninstall")) {
-                    ManagedInstallerClass.InstallHelper(new string[] {
-                        "/u",
-                         typeof(Program).Assembly.Location
-                    });
-                    return;
-                }
-            }*/
-
-            ServiceBase[] ServicesToRun;
-            ServicesToRun = new ServiceBase[]
-            {
-                new MainService()
-            };
-            ServiceBase.Run(ServicesToRun);
-        }
     }
 }
