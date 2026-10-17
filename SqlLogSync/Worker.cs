@@ -32,7 +32,7 @@ internal class Worker : BackgroundService
                 Console.WriteLine(ex.ToString());
             }
 
-            await Task.Delay(TimeSpan.FromMinutes(15));
+            await Task.Delay(TimeSpan.FromMinutes(15), stoppingToken);
         }
     }
 }
