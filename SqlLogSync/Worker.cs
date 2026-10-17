@@ -21,8 +21,14 @@ internal class Worker : BackgroundService
     {
         while(!stoppingToken.IsCancellationRequested)
         {
-            var task = DatabaseTask.Create(services);
-            await task.RunAsync();
+            try
+            {
+                var task = DatabaseTask.Create(services);
+                await task.RunAsync();
+            } catch (Exception ex)
+            {
+                Console.WriteLine(ex.ToString());
+            }
 
             await Task.Delay(TimeSpan.FromMinutes(15));
         }
