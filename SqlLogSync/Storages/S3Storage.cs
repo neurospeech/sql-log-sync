@@ -1,4 +1,6 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
+using Amazon.S3.Transfer;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,10 +15,14 @@ internal class S3Storage : Storage
 
     public string BucketName { get; private set; }
 
-    public S3Storage()
+    public S3Storage(string bucketName, string accessKeyId, string keySecret)
     {
-        this.client = new AmazonS3Client();
-        this.BucketName = "";
+        this.client = new AmazonS3Client(new AmazonS3Config
+        {
+            RegionEndpoint = Amazon.RegionEndpoint.USEast1,
+            DefaultAWSCredentials = new BasicAWSCredentials(accessKeyId, keySecret)
+        });
+        this.BucketName = bucketName;
     }
 
     public override Task DeleteFile(string cloudPath)
@@ -24,9 +30,10 @@ internal class S3Storage : Storage
         throw new NotImplementedException();
     }
 
-    public override Task DownloadFile(string cloudPath, FileInfo localFile)
+    public override async Task DownloadFile(string cloudPath, FileInfo localFile)
     {
-        throw new NotImplementedException();
+        using var tr = new TransferUtility(this.client);
+        await tr.DownloadAsync(localFile.FullName, this.BucketName, cloudPath);
     }
 
     public override async IAsyncEnumerable<StorageFile> EnumerateFilesAsync(string path)
@@ -61,8 +68,16 @@ internal class S3Storage : Storage
         }
     }
 
-    public override Task UploadFile(string cloudPath, FileInfo localFile)
+    public override async Task UploadFile(string cloudPath, FileInfo localFile)
     {
-        throw new NotImplementedException();
+        using var tr = new TransferUtility(this.client);
+        using var fs = localFile.OpenRead();
+        var r = new TransferUtilityUploadRequest {
+            BucketName = this.BucketName,
+            Key = cloudPath,
+            AutoCloseStream= true,
+            FilePath = localFile.FullName,
+        };
+        await tr.UploadAsync(r);
     }
 }

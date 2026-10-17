@@ -16,22 +16,8 @@ namespace SqlLogSync.Tasks
         private async Task<bool> FullBackupExists()
         {
             string today = FileDateKey(DateTime.Today);
-            if (Storage.FileExists(Database + "/" + today + ".bak.zip"))
+            if (await Storage.FileExists(Database + "/" + today + ".bak.zip"))
                 return true;
-
-            DateTime older = DateTime.Today.AddDays(-30);
-            DateTime till = DateTime.Today.AddDays(-10);
-            for (DateTime i = older; i < till; i = i.AddDays(1))
-            {
-                Storage.DeleteFile(Database + "/" + FileDateKey(i));
-            }
-
-            for (DateTime i = till; i <= DateTime.Today.AddDays(-5); i = i.AddDays(1))
-            {
-                Storage.DeleteFile(Database + "/" + FileDateKey(i) + "/logs/");
-            }
-
-            
 
             await TakeBackup(backup, today);
 
@@ -75,7 +61,7 @@ namespace SqlLogSync.Tasks
             }
 
             Utils.Log(Database + ": Uploading Backup");
-            Storage.UploadFile(Database + "/" +  file + ".bak.zip", new FileInfo(tmpFile));
+            await Storage.UploadFile(Database + "/" +  file + ".bak.zip", new FileInfo(tmpFile));
             File.Delete(tmpFile);
             File.Delete(localFile);
 

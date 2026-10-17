@@ -73,12 +73,16 @@ namespace SqlLogSync.Tasks
 
             if (storage == "azure")
             {
-                sg = new S3Storage();
+                sg = new S3Storage(
+                    settings["DB.Storage.BucketName"],
+                    settings["DB.Storage.AccessKeyId"],
+                    settings["DB.Storage.SecretAccessKey"]
+                );
 
-                sg.Container = settings["DB.Storage.Container"];
-                sg.Host = settings["DB.Storage.Host"];
-                sg.Key = settings["DB.Storage.Key"];
-                sg.Secrete = settings["DB.Storage.Secrete"];
+                //sg.Container = settings["DB.Storage.Container"];
+                //sg.Host = settings["DB.Storage.Host"];
+                //sg.Key = settings["DB.Storage.Key"];
+                //sg.Secrete = settings["DB.Storage.Secrete"];
 
                 DBTask.Storage = sg;
             }
