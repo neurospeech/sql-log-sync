@@ -24,8 +24,12 @@ public class Program
         Console.SetOut(threadSafeWriter);
         Console.SetError(threadSafeWriter);
 
-        DotNetEnv.Env.Load();
-        DotNetEnv.Env.TraversePath().Load();
+        string envFile = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, ".env");
+        Console.WriteLine($"Loading env from {envFile}");
+        DotNetEnv.Env.Load(envFile, new DotNetEnv.LoadOptions {
+            
+        });
+
         CreateHostBuilder(args).Build().Run();
     }
 
