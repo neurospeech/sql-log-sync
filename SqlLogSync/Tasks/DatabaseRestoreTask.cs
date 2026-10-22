@@ -95,18 +95,13 @@ namespace SqlLogSync.Tasks
             FileInfo tfile = new FileInfo(zipFile.FullName + ".t.bak");
             if (tfile.Exists)
                 tfile.Delete();
-            using (var zip = ZipFile.OpenRead(zipFile.FullName))
-            {
-                foreach (var entry in zip.Entries)
-                {
-                    using (FileStream fsout = tfile.OpenWrite())
-                    {
-                        
-                        
-                    }
-                    break;
-                }
-            }
+            var p = System.Diagnostics.Process.Start(AppContext.BaseDirectory.TrimEnd('/') + "/7za.exe", new string[] {
+                "x",
+                "-p" + ZipPassword,
+                zipFile.FullName,
+                zipFile.DirectoryName
+            });
+            await p.WaitForExitAsync();
 
             try
             {

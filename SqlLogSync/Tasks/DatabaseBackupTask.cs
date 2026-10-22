@@ -40,25 +40,41 @@ namespace SqlLogSync.Tasks
 
             Utils.Log(Database + ": Compressing Backup");
 
-            string tmpFile = Path.GetTempFileName();
+            //string tmpFile = Path.GetTempFileName();
 
-            using( var fs = System.IO.File.OpenWrite(tmpFile))
-            using (var zip = new ZipOutputStream(fs))
-            {
-                zip.Password = ZipPassword;
-                zip.SetLevel(9);
-                zip.UseZip64 = UseZip64.On;
-                var lf = new FileInfo(localFile);
-                var entry = new ZipEntry(lf.Name);
-                entry.AESKeySize = 256;
-                entry.DateTime = DateTime.Now;
-                await zip.PutNextEntryAsync(entry);
+            //using( var fs = System.IO.File.OpenWrite(tmpFile))
+            //using (var zip = new ZipOutputStream(fs))
+            //{
+            //    zip.Password = ZipPassword;
+            //    zip.SetLevel(9);
+            //    zip.UseZip64 = UseZip64.On;
+            //    var lf = new FileInfo(localFile);
+            //    var entry = new ZipEntry(lf.Name);
+            //    entry.AESKeySize = 256;
+            //    entry.DateTime = DateTime.Now;
+            //    await zip.PutNextEntryAsync(entry);
 
-                using (var fin = System.IO.File.OpenRead(localFile))
-                {
-                    await fin.CopyToAsync(zip);
-                }
-            }
+            //    using (var fin = System.IO.File.OpenRead(localFile))
+            //    {
+            //        await fin.CopyToAsync(zip);
+            //    }
+            //}
+
+            var tmpFile = localFile + ".zip";
+
+            // 7zr.exe a -t7z -m0=LZMA2 -mx=3 -mmt=on "C:\SQLBackups\DailyBackup.7z" "C:\SQLBackups\DailyBackup.bak"
+
+            var p = System.Diagnostics.Process.Start(AppContext.BaseDirectory.TrimEnd('/') + "/7za.exe", new string[] {
+                "a",
+                "-t7z",
+                "-m0=LZMA2",
+                "-mx=3",
+                "-mmt=on",
+                "-p" + ZipPassword,
+                tmpFile,
+                localFile
+            });
+            await p.WaitForExitAsync();
 
             Utils.Log(Database + ": Uploading Backup");
             await Storage.UploadFile(Database + "/" +  file + ".bak.zip", new FileInfo(tmpFile));

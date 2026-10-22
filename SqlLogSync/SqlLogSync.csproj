@@ -17,6 +17,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<None Update="7za.exe">
+		  <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
 		<None Update="Uninstall.bat">
 			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
 		</None>
