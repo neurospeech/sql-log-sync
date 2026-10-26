@@ -16,7 +16,7 @@ namespace SqlLogSync.Tasks
         private async Task<bool> FullBackupExists()
         {
             string today = FileDateKey(DateTime.Today);
-            if (await Storage.FileExists(Database + "/" + today + ".bak.zip"))
+            if (await Storage.FileExists(Database + "/" + today + ".bak.7z"))
                 return true;
 
             await TakeBackup(backup, today);
@@ -60,7 +60,7 @@ namespace SqlLogSync.Tasks
             //    }
             //}
 
-            var tmpFile = localFile + ".zip";
+            var tmpFile = localFile + ".7z";
 
             // 7zr.exe a -t7z -m0=LZMA2 -mx=3 -mmt=on "C:\SQLBackups\DailyBackup.7z" "C:\SQLBackups\DailyBackup.bak"
 
