@@ -77,7 +77,7 @@ namespace SqlLogSync.Tasks
             await p.WaitForExitAsync();
 
             Utils.Log(Database + ": Uploading Backup");
-            await Storage.UploadFile(Database + "/" +  file + ".bak.zip", new FileInfo(tmpFile));
+            await Storage.UploadFile(Database + "/" +  file + ".bak.7z", new FileInfo(tmpFile));
             File.Delete(tmpFile);
             File.Delete(localFile);
 

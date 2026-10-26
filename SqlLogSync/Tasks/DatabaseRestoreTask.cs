@@ -70,7 +70,7 @@ namespace SqlLogSync.Tasks
         {
             DateTime now = DateTime.Now;
 
-            string backup = Database + "/" + FileDateKey(now) + ".bak.zip";
+            string backup = Database + "/" + FileDateKey(now) + ".bak.7z";
 
             FileInfo zipFile = new FileInfo(BackupFolder + "\\" + backup.Replace("/", "\\"));
             if (zipFile.Exists)
